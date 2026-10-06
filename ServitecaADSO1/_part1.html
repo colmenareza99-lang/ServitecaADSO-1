@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Serviteca ADSO — Prototipo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root, [data-theme="dark"] {
+      --clr-bg:        #121820;
+      --clr-surface:   #1a2230;
+      --clr-card:      #1f2d3d;
+      --clr-border:    #2a3d52;
+      --clr-primary:   #FF6B00;
+      --clr-primary-h: #ff8533;
+      --clr-accent:    #FF6B00;
+      --clr-danger:    #ff4d4d;
+      --clr-warn:      #ffc048;
+      --clr-text:      #FFFFFF;
+      --clr-muted:     #8a9bb0;
+      --clr-hero-glow: rgba(255,107,0,.20);
+      --clr-badge-ok-bg:  rgba(255,107,0,.15);
+      --clr-badge-ok-txt: #FF6B00;
+      --radius:        10px;
+      --shadow:        0 4px 24px rgba(0,0,0,.55);
+      --transition:    .2s ease;
+      --sidebar-w:     220px;
+    }
+    [data-theme="light"] {
+      --clr-bg:        #f4f6fa;
+      --clr-surface:   #ffffff;
+      --clr-card:      #ffffff;
+      --clr-border:    #d8e0ea;
+      --clr-primary:   #FF6B00;
+      --clr-primary-h: #e05e00;
+      --clr-accent:    #FF6B00;
+      --clr-danger:    #e03030;
+      --clr-warn:      #e0a020;
+      --clr-text:      #121820;
+      --clr-muted:     #5a6a7a;
+      --clr-hero-glow: rgba(255,107,0,.10);
+      --clr-badge-ok-bg:  rgba(255,107,0,.12);
+      --clr-badge-ok-txt: #cc5500;
+      --shadow:        0 4px 18px rgba(0,0,0,.10);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--clr-bg); color: var(--clr-text); min-height: 100vh; transition: background .25s, color .25s; }
+    h1, h2, h3 { font-weight: 700; line-height: 1.2; color: var(--clr-text); }
+    p { line-height: 1.6; color: var(--clr-muted); }
+    a { color: var(--clr-primary); text-decoration: none; }

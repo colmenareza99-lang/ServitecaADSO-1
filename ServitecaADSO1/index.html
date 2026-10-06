@@ -1,0 +1,840 @@
+﻿<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Serviteca ADSO</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root,[data-theme="dark"]{
+  --clr-bg:#121820;--clr-surface:#1a2230;--clr-card:#1f2d3d;--clr-border:#2a3d52;
+  --clr-primary:#FF6B00;--clr-primary-h:#ff8533;--clr-danger:#ff4d4d;--clr-warn:#ffc048;
+  --clr-text:#FFFFFF;--clr-muted:#8a9bb0;--clr-hero-glow:rgba(255,107,0,.20);
+  --clr-badge-ok-bg:rgba(255,107,0,.15);--clr-badge-ok-txt:#FF6B00;
+  --radius:10px;--shadow:0 4px 24px rgba(0,0,0,.55);--transition:.2s ease;--sidebar-w:220px}
+[data-theme="light"]{
+  --clr-bg:#f4f6fa;--clr-surface:#ffffff;--clr-card:#ffffff;--clr-border:#d8e0ea;
+  --clr-primary:#FF6B00;--clr-primary-h:#e05e00;--clr-danger:#e03030;--clr-warn:#e0a020;
+  --clr-text:#121820;--clr-muted:#5a6a7a;--clr-hero-glow:rgba(255,107,0,.10);
+  --clr-badge-ok-bg:rgba(255,107,0,.12);--clr-badge-ok-txt:#cc5500;
+  --shadow:0 4px 18px rgba(0,0,0,.10);--radius:10px;--transition:.2s ease;--sidebar-w:220px}
+html{scroll-behavior:smooth}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--clr-bg);color:var(--clr-text);min-height:100vh;transition:background .25s,color .25s}
+h1,h2,h3{font-weight:700;line-height:1.2;color:var(--clr-text)}
+p{line-height:1.6;color:var(--clr-muted)}
+a{color:var(--clr-primary);text-decoration:none}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.2rem;border-radius:var(--radius);font-size:.875rem;font-weight:600;border:none;cursor:pointer;transition:var(--transition)}
+.btn-primary{background:var(--clr-primary);color:#fff}.btn-primary:hover{background:var(--clr-primary-h)}
+.btn-outline{background:transparent;color:var(--clr-primary);border:1.5px solid var(--clr-primary)}.btn-outline:hover{background:var(--clr-primary);color:#fff}
+.btn-danger{background:var(--clr-danger);color:#fff}.btn-danger:hover{opacity:.85}
+.btn-warn{background:var(--clr-warn);color:#121820}
+.btn-sm{padding:.3rem .75rem;font-size:.78rem}
+.theme-toggle{background:transparent;border:1.5px solid var(--clr-border);border-radius:20px;padding:.3rem .75rem;cursor:pointer;font-size:.82rem;color:var(--clr-muted);display:flex;align-items:center;gap:.4rem;transition:var(--transition)}
+.theme-toggle:hover{border-color:var(--clr-primary);color:var(--clr-primary)}
+.input,select,textarea{width:100%;padding:.6rem .9rem;background:var(--clr-surface);border:1.5px solid var(--clr-border);border-radius:var(--radius);color:var(--clr-text);font-size:.9rem;outline:none;transition:border-color var(--transition)}
+.input:focus,select:focus,textarea:focus{border-color:var(--clr-primary)}
+.input::placeholder{color:var(--clr-muted)}
+select option{background:var(--clr-surface);color:var(--clr-text)}
+label{font-size:.82rem;color:var(--clr-muted);margin-bottom:.3rem;display:block}
+.badge{display:inline-block;padding:.2rem .65rem;border-radius:99px;font-size:.72rem;font-weight:700}
+.badge-active{background:var(--clr-badge-ok-bg);color:var(--clr-badge-ok-txt)}
+.badge-suspend{background:rgba(255,77,77,.15);color:var(--clr-danger)}
+.badge-admin{background:rgba(255,107,0,.18);color:var(--clr-primary)}
+.badge-user{background:rgba(138,155,176,.15);color:var(--clr-muted)}
+.screen{display:none}.screen.active{display:flex}
+#screen-landing{flex-direction:column;min-height:100vh}
+.landing-nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:var(--clr-surface);backdrop-filter:blur(10px);border-bottom:1px solid var(--clr-border);position:sticky;top:0;z-index:100}
+.landing-logo{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1.1rem}
+.landing-logo .dot{width:10px;height:10px;border-radius:50%;background:var(--clr-primary);display:inline-block}
+.landing-nav-links{display:flex;gap:2rem}
+.landing-nav-links a{color:var(--clr-muted);font-size:.9rem;transition:color var(--transition)}.landing-nav-links a:hover{color:var(--clr-text)}
+.landing-nav-right{display:flex;align-items:center;gap:.75rem}
+.hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5rem 2rem;background:radial-gradient(ellipse 60% 50% at 50% 0%,var(--clr-hero-glow) 0%,transparent 70%)}
+.hero-tag{display:inline-block;padding:.3rem 1rem;background:rgba(255,107,0,.15);border:1px solid rgba(255,107,0,.35);border-radius:99px;font-size:.78rem;color:var(--clr-primary);margin-bottom:1.5rem;letter-spacing:.05em;text-transform:uppercase}
+.hero h1{font-size:clamp(2rem,5vw,3.4rem);margin-bottom:1.2rem}
+.hero h1 em{color:var(--clr-primary);font-style:normal}
+.hero p{max-width:520px;font-size:1.05rem;margin-bottom:2.5rem}
+.hero-cta{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;padding:4rem 2.5rem;max-width:1100px;margin:0 auto;width:100%}
+.feature-card{background:var(--clr-card);border:1px solid var(--clr-border);border-radius:var(--radius);padding:1.5rem;transition:transform var(--transition),box-shadow var(--transition)}
+.feature-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.feature-icon{width:42px;height:42px;border-radius:10px;background:rgba(255,107,0,.15);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem}
+.feature-card h3{margin-bottom:.5rem;font-size:1rem}
+.stats{display:flex;justify-content:center;flex-wrap:wrap;gap:2.5rem;padding:3rem 2rem;border-top:1px solid var(--clr-border);border-bottom:1px solid var(--clr-border)}
+.stat{text-align:center}.stat .num{font-size:2.2rem;font-weight:800;color:var(--clr-primary)}.stat .lbl{font-size:.8rem;color:var(--clr-muted);margin-top:.2rem}
+.landing-footer{text-align:center;padding:1.5rem;font-size:.8rem;color:var(--clr-muted);border-top:1px solid var(--clr-border)}
+#screen-login{align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(ellipse 50% 60% at 70% 30%,rgba(255,107,0,.10) 0%,transparent 65%),radial-gradient(ellipse 40% 40% at 20% 80%,rgba(255,107,0,.06) 0%,transparent 60%)}
+#screen-register{align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(ellipse 50% 60% at 30% 20%,rgba(255,107,0,.08) 0%,transparent 65%)}
+.login-card{background:var(--clr-card);border:1px solid var(--clr-border);border-radius:16px;padding:2.5rem 2rem;width:100%;max-width:380px;box-shadow:var(--shadow)}
+.login-card .brand{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1.2rem;margin-bottom:1.8rem}
+.login-card .brand span{font-size:1.6rem}
+.login-card h2{margin-bottom:.4rem}.login-card>p{margin-bottom:2rem;font-size:.88rem}
+.form-group{margin-bottom:1.2rem}
+.password-wrapper{position:relative}.password-wrapper .input{padding-right:2.8rem}
+.toggle-pw{position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--clr-muted);cursor:pointer;font-size:1.1rem}
+.login-error{display:none;background:rgba(255,77,77,.12);border:1px solid rgba(255,77,77,.3);border-radius:8px;padding:.7rem 1rem;font-size:.84rem;color:var(--clr-danger);margin-bottom:1rem}
+.login-error.visible{display:block}
+.login-card .btn{width:100%;justify-content:center;padding:.75rem;font-size:.95rem;margin-top:.5rem}
+.login-back{text-align:center;margin-top:1.2rem;font-size:.82rem;color:var(--clr-muted)}.login-back a{color:var(--clr-primary)}
+#screen-app{min-height:100vh;flex-direction:column}
+.topbar{display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 1.5rem;background:var(--clr-surface);border-bottom:1px solid var(--clr-border);flex-shrink:0}
+.topbar-logo{font-weight:800;font-size:1rem;display:flex;align-items:center;gap:.5rem}
+.topbar-logo .dot{width:8px;height:8px;border-radius:50%;background:var(--clr-primary)}
+.topbar-right{display:flex;align-items:center;gap:.75rem}
+.topbar-user{display:flex;align-items:center;gap:.8rem;font-size:.88rem}
+.topbar-avatar{width:32px;height:32px;border-radius:50%;background:var(--clr-primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;color:#fff}
+.app-body{display:flex;flex:1;overflow:hidden}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--clr-surface);border-right:1px solid var(--clr-border);padding:1.2rem .75rem;display:flex;flex-direction:column;gap:.3rem;overflow-y:auto}
+.sidebar-section{font-size:.7rem;color:var(--clr-muted);text-transform:uppercase;letter-spacing:.08em;padding:.5rem .6rem .3rem;margin-top:.5rem}
+.nav-item{display:flex;align-items:center;gap:.7rem;padding:.6rem .8rem;border-radius:8px;font-size:.875rem;color:var(--clr-muted);cursor:pointer;transition:var(--transition);border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--clr-card);color:var(--clr-text)}
+.nav-item.active{background:rgba(255,107,0,.15);color:var(--clr-primary);font-weight:600}
+.nav-item .icon{font-size:1rem;width:1.2rem;text-align:center}
+.nav-item.danger{color:var(--clr-danger)}.nav-item.danger:hover{background:rgba(255,77,77,.1)}
+.nav-item .tag-admin{margin-left:auto;font-size:.6rem;font-weight:700;background:rgba(255,107,0,.2);color:var(--clr-primary);border-radius:4px;padding:.1rem .35rem;text-transform:uppercase}
+.content{flex:1;overflow-y:auto;padding:2rem}
+.content-section{display:none}.content-section.active{display:block}
+.page-header{margin-bottom:1.8rem}.page-header h2{font-size:1.5rem;margin-bottom:.3rem}.page-header p{font-size:.88rem}
+.kpi-row{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem}
+.kpi-card{flex:1;min-width:140px;background:var(--clr-card);border:1px solid var(--clr-border);border-radius:var(--radius);padding:1rem 1.2rem}
+.kpi-card .kpi-val{font-size:1.8rem;font-weight:800;color:var(--clr-primary)}.kpi-card .kpi-label{font-size:.78rem;color:var(--clr-muted);margin-top:.2rem}
+.table-toolbar{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
+.search-box{position:relative;flex:1;max-width:280px}
+.search-box .icon{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:var(--clr-muted);pointer-events:none}
+.search-box .input{padding-left:2.2rem}
+.table-wrap{background:var(--clr-card);border:1px solid var(--clr-border);border-radius:var(--radius);overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:.875rem}
+thead th{background:var(--clr-surface);text-align:left;padding:.75rem 1rem;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--clr-muted);border-bottom:1px solid var(--clr-border)}
+tbody tr{border-bottom:1px solid var(--clr-border);transition:background var(--transition)}
+tbody tr:last-child{border-bottom:none}tbody tr:hover{background:rgba(255,107,0,.04)}
+tbody td{padding:.75rem 1rem;vertical-align:middle}
+.actions{display:flex;gap:.4rem}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);align-items:center;justify-content:center;z-index:200}
+.modal-overlay.open{display:flex}
+.modal{background:var(--clr-card);border:1px solid var(--clr-border);border-radius:14px;padding:2rem;width:100%;max-width:440px;box-shadow:var(--shadow);animation:slideUp .2s ease}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}}
+.modal h3{margin-bottom:1.2rem}.modal-footer{display:flex;justify-content:flex-end;gap:.75rem;margin-top:1.5rem}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.modal-grid .full{grid-column:1/-1}
+.confirm-modal{max-width:360px;text-align:center}.confirm-modal .icon-big{font-size:2.5rem;margin-bottom:.8rem}.confirm-modal p{margin-bottom:1.5rem}
+.toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:300;display:flex;flex-direction:column;gap:.5rem}
+.toast{padding:.7rem 1.2rem;border-radius:8px;font-size:.85rem;font-weight:600;box-shadow:var(--shadow);animation:toastIn .25s ease;display:flex;align-items:center;gap:.5rem}
+@keyframes toastIn{from{transform:translateX(40px);opacity:0}}
+.toast-success{background:var(--clr-primary);color:#fff}.toast-error{background:var(--clr-danger);color:#fff}
+.welcome-block{background:linear-gradient(135deg,rgba(255,107,0,.18) 0%,rgba(255,107,0,.06) 100%);border:1px solid rgba(255,107,0,.30);border-radius:14px;padding:1.8rem 2rem;margin-bottom:2rem;display:flex;align-items:center;gap:1.5rem}
+.welcome-block .icon-big{font-size:2.5rem}.welcome-block h2{margin-bottom:.3rem}.welcome-block p{font-size:.88rem}
+.section-label{font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--clr-muted);margin-bottom:.8rem}
+.service-form-card{background:var(--clr-card);border:1px solid var(--clr-border);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem}
+.service-form-card h3{margin-bottom:1.2rem;font-size:1rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.form-row .full{grid-column:1/-1}
+.help-module{background:var(--clr-card);border:1px solid var(--clr-border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.2rem}
+.help-module h3{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;font-size:1rem}
+.help-module ol{padding-left:1.4rem}.help-module ol li{margin-bottom:.5rem;font-size:.88rem;color:var(--clr-muted)}.help-module ol li strong{color:var(--clr-text)}
+.strength-bar{height:4px;border-radius:2px;margin-top:.4rem;transition:all .3s;background:var(--clr-border)}
+.strength-bar.weak{background:var(--clr-danger);width:33%}.strength-bar.medium{background:var(--clr-warn);width:66%}.strength-bar.strong{background:var(--clr-primary);width:100%}
+.strength-label{font-size:.72rem;color:var(--clr-muted);margin-top:.2rem}
+.client-cars-panel{background:var(--clr-surface);border:1px solid var(--clr-border);border-radius:var(--radius);padding:1rem 1.2rem;margin-top:1.5rem}
+.client-cars-panel h4{font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:var(--clr-muted);margin-bottom:.8rem}
+.client-car-chip{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,107,0,.12);border:1px solid rgba(255,107,0,.25);border-radius:6px;padding:.25rem .65rem;font-size:.78rem;font-weight:600;color:var(--clr-primary);margin:.2rem}
+</style>
+</head>
+<body><div class="toast-container" id="toastContainer"></div>
+<div class="modal-overlay" id="confirmOverlay">
+  <div class="modal confirm-modal">
+    <div class="icon-big">&#9888;&#65039;</div>
+    <h3 id="confirmTitle">&#191;Est&#225;s seguro?</h3>
+    <p id="confirmMsg">Esta acci&#243;n no se puede deshacer.</p>
+    <div class="modal-footer" style="justify-content:center">
+      <button class="btn btn-outline" onclick="closeConfirm()">Cancelar</button>
+      <button class="btn btn-danger" id="confirmOkBtn">Confirmar</button>
+    </div>
+  </div>
+</div>
+<!-- LANDING -->
+<section class="screen active" id="screen-landing">
+  <nav class="landing-nav">
+    <div class="landing-logo"><span class="dot"></span> Serviteca ADSO</div>
+    <div class="landing-nav-links">
+      <a href="#features">Funciones</a>
+      <a href="#stats">Estad&#237;sticas</a>
+    </div>
+    <div class="landing-nav-right">
+      <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleLanding">&#127769; Oscuro</button>
+      <button class="btn btn-primary" onclick="showScreen('login')">Iniciar sesi&#243;n</button>
+    </div>
+  </nav>
+  <div class="hero">
+    <span class="hero-tag">Sistema de gesti&#243;n automotriz</span>
+    <h1>Gestiona tu taller con<br/><em>precisi&#243;n y eficiencia</em></h1>
+    <p>Controla clientes, veh&#237;culos y servicios. Cada auto vinculado a su propietario (relaci&#243;n 1&#8594;N), historial completo y b&#250;squeda instant&#225;nea.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" onclick="showScreen('login')">Ingresar al sistema &#8594;</button>
+      <button class="btn btn-outline" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Ver funciones</button>
+    </div>
+  </div>
+  <div id="features" class="features">
+    <div class="feature-card"><div class="feature-icon">&#128101;</div><h3>Gesti&#243;n de Clientes</h3><p>Registro, edici&#243;n, b&#250;squeda y suspensi&#243;n con validaci&#243;n completa.</p></div>
+    <div class="feature-card"><div class="feature-icon">&#128663;</div><h3>Carros Vinculados</h3><p>Cada veh&#237;culo est&#225; ligado a un propietario. Un cliente puede tener m&#250;ltiples autos (1&#8594;N).</p></div>
+    <div class="feature-card"><div class="feature-icon">&#128295;</div><h3>Registro de Servicios</h3><p>Documenta cada servicio con tipo, fecha y cliente. Historial ordenado por veh&#237;culo.</p></div>
+    <div class="feature-card"><div class="feature-icon">&#128274;</div><h3>Acceso Seguro</h3><p>Autenticaci&#243;n con contrase&#241;a, bloqueo tras intentos fallidos y cierre confirmado.</p></div>
+  </div>
+  <div id="stats" class="stats">
+    <div class="stat"><div class="num">10k+</div><div class="lbl">Registros soportados</div></div>
+    <div class="stat"><div class="num">5</div><div class="lbl">Tipos de servicio</div></div>
+    <div class="stat"><div class="num">100%</div><div class="lbl">Offline &amp; local</div></div>
+    <div class="stat"><div class="num">&lt;1s</div><div class="lbl">B&#250;squeda instant&#225;nea</div></div>
+  </div>
+  <footer class="landing-footer">&#169; 2026 Serviteca ADSO &#8212; Proyecto ADSO &#183; Prototipo de interfaz</footer>
+</section>
+<!-- LOGIN -->
+<section class="screen" id="screen-login">
+  <div class="login-card">
+    <div class="brand"><span>&#128295;</span> Serviteca ADSO</div>
+    <h2>Bienvenido de nuevo</h2>
+    <p>Ingresa tus credenciales para acceder al sistema.</p>
+    <div class="login-error" id="loginError">Usuario o contrase&#241;a incorrectos.</div>
+    <div class="form-group">
+      <label for="loginUser">Usuario</label>
+      <input class="input" id="loginUser" type="text" placeholder="ej. admin" autocomplete="username"/>
+    </div>
+    <div class="form-group">
+      <label for="loginPass">Contrase&#241;a</label>
+      <div class="password-wrapper">
+        <input class="input" id="loginPass" type="password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" autocomplete="current-password"/>
+        <button class="toggle-pw" type="button" onclick="togglePw()">&#128065;&#65039;</button>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="doLogin()">Ingresar &#8594;</button>
+    <div class="login-back" style="margin-top:.9rem">&#191;No tienes cuenta? <a href="#" onclick="showScreen('register');return false">Crear cuenta nueva</a></div>
+    <div class="login-back" style="margin-top:.4rem"><a href="#" onclick="showScreen('landing');return false">&#8592; Volver al inicio</a></div>
+    <div style="text-align:center;margin-top:1rem">
+      <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleLogin">&#127769; Oscuro</button>
+    </div>
+  </div>
+</section>
+<!-- REGISTER -->
+<section class="screen" id="screen-register">
+  <div class="login-card" style="max-width:420px">
+    <div class="brand"><span>&#128295;</span> Serviteca ADSO</div>
+    <h2>Crear cuenta</h2>
+    <p>Registra un nuevo acceso al sistema.</p>
+    <div class="login-error" id="registerError"></div>
+    <div class="form-group"><label for="regUser">Nombre de usuario *</label><input class="input" id="regUser" type="text" placeholder="ej. operador1" autocomplete="off" maxlength="30"/></div>
+    <div class="form-group"><label for="regNombre">Nombre completo *</label><input class="input" id="regNombre" type="text" placeholder="ej. Pedro Ram&#237;rez" maxlength="80"/></div>
+    <div class="form-group">
+      <label for="regPass">Contrase&#241;a *</label>
+      <div class="password-wrapper">
+        <input class="input" id="regPass" type="password" placeholder="M&#237;nimo 4 caracteres" autocomplete="new-password" oninput="checkStrength()"/>
+        <button class="toggle-pw" type="button" onclick="togglePwReg()">&#128065;&#65039;</button>
+      </div>
+      <div class="strength-bar" id="strengthBar"></div>
+      <div class="strength-label" id="strengthLabel"></div>
+    </div>
+    <div class="form-group">
+      <label for="regPass2">Confirmar contrase&#241;a *</label>
+      <div class="password-wrapper">
+        <input class="input" id="regPass2" type="password" placeholder="Repite la contrase&#241;a" autocomplete="new-password"/>
+        <button class="toggle-pw" type="button" onclick="togglePwReg2()">&#128065;&#65039;</button>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="doRegister()" style="width:100%;justify-content:center;padding:.75rem;font-size:.95rem;margin-top:.5rem">Crear cuenta &#8594;</button>
+    <div class="login-back" style="margin-top:1rem">&#191;Ya tienes cuenta? <a href="#" onclick="showScreen('login');return false">Iniciar sesi&#243;n</a></div>
+  </div>
+</section>
+<!-- APP -->
+<section class="screen" id="screen-app" style="flex-direction:column">
+  <header class="topbar">
+    <div class="topbar-logo"><span class="dot"></span> Serviteca ADSO</div>
+    <div class="topbar-right">
+      <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleApp">&#127769; Oscuro</button>
+      <div class="topbar-user">
+        <div class="topbar-avatar" id="avatarInitial">A</div>
+        <span id="topbarUsername" style="font-size:.88rem;font-weight:600">Admin</span>
+      </div>
+    </div>
+  </header>
+  <div class="app-body">
+    <nav class="sidebar">
+      <div class="sidebar-section">Principal</div>
+      <button class="nav-item active" onclick="navTo('dashboard',this)"><span class="icon">&#127968;</span> Inicio</button>
+      <div class="sidebar-section">M&#243;dulos</div>
+      <button class="nav-item" onclick="navTo('clientes',this)"><span class="icon">&#128101;</span> Clientes</button>
+      <button class="nav-item" onclick="navTo('carros',this)"><span class="icon">&#128663;</span> Carros</button>
+      <button class="nav-item" onclick="navTo('servicios',this)"><span class="icon">&#128295;</span> Servicios</button>
+      <div class="sidebar-section">Sistema</div>
+      <button class="nav-item" id="navUsuarios" style="display:none" onclick="navTo('usuarios',this)"><span class="icon">&#128737;&#65039;</span> Usuarios <span class="tag-admin">admin</span></button>
+      <button class="nav-item" onclick="navTo('ayuda',this)"><span class="icon">&#10067;</span> Ayuda</button>
+      <button class="nav-item danger" onclick="confirmLogout()"><span class="icon">&#128682;</span> Cerrar Sesi&#243;n</button>
+    </nav>
+    <main class="content">
+      <!-- DASHBOARD -->
+      <div class="content-section active" id="section-dashboard">
+        <div class="welcome-block">
+          <div class="icon-big">&#128075;</div>
+          <div><h2>Hola, <span id="welcomeName">Admin</span></h2><p>Tienes <strong>3 servicios</strong> registrados hoy.</p></div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-card"><div class="kpi-val" id="kpiClientes">4</div><div class="kpi-label">Clientes registrados</div></div>
+          <div class="kpi-card"><div class="kpi-val" id="kpiCarros">4</div><div class="kpi-label">Veh&#237;culos registrados</div></div>
+          <div class="kpi-card"><div class="kpi-val" id="kpiServicios">5</div><div class="kpi-label">Servicios totales</div></div>
+          <div class="kpi-card"><div class="kpi-val" id="kpiActivos">3</div><div class="kpi-label">Clientes activos</div></div>
+        </div>
+        <div class="section-label">Servicios recientes</div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Veh&#237;culo</th><th>Tipo</th><th>Fecha</th><th>Cliente</th></tr></thead>
+          <tbody>
+            <tr><td>ABC123</td><td>Cambio de Aceite</td><td>2026-10-05</td><td>Juan P&#233;rez</td></tr>
+            <tr><td>DEF456</td><td>Frenos</td><td>2026-10-04</td><td>Mar&#237;a L&#243;pez</td></tr>
+            <tr><td>GHI789</td><td>Revisi&#243;n General</td><td>2026-10-03</td><td>Carlos Ruiz</td></tr>
+          </tbody></table>
+        </div>
+      </div>
+      <!-- CLIENTES -->
+      <div class="content-section" id="section-clientes">
+        <div class="page-header"><h2>Clientes</h2><p>Administra los clientes. Usa &#128663; para ver los veh&#237;culos de cada cliente (relaci&#243;n 1&#8594;N).</p></div>
+        <div class="table-toolbar">
+          <div class="search-box"><span class="icon">&#128269;</span><input class="input" id="searchCliente" placeholder="Buscar por nombre, apellido o c&#233;dula..." oninput="filterClientes()"/></div>
+          <button class="btn btn-primary" onclick="openClienteModal()">+ Nuevo cliente</button>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>C&#233;dula</th><th>Nombres</th><th>Apellidos</th><th>Celular</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="bodyClientes"></tbody></table>
+        </div>
+        <div id="clienteCarrosPanel" style="display:none" class="client-cars-panel">
+          <h4>&#128663; Veh&#237;culos del cliente: <span id="clienteCarrosPanelNombre"></span></h4>
+          <div id="clienteCarrosLista"></div>
+        </div>
+      </div>
+      <!-- CARROS -->
+      <div class="content-section" id="section-carros">
+        <div class="page-header"><h2>Carros</h2><p>Inventario de veh&#237;culos. Cada carro est&#225; vinculado a un propietario (relaci&#243;n Cliente 1&#8594;N Carros).</p></div>
+        <div class="table-toolbar">
+          <div class="search-box"><span class="icon">&#128269;</span><input class="input" id="searchCarro" placeholder="Buscar por placa, marca, modelo o propietario..." oninput="filterCarros()"/></div>
+          <button class="btn btn-primary" onclick="openCarroModal()">+ Nuevo veh&#237;culo</button>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Placa</th><th>Marca</th><th>Modelo</th><th>Propietario</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="bodyCarros"></tbody></table>
+        </div>
+      </div>
+      <!-- SERVICIOS -->
+      <div class="content-section" id="section-servicios">
+        <div class="page-header"><h2>Servicios</h2><p>Registra servicios y consulta el historial por veh&#237;culo.</p></div>
+        <div class="service-form-card">
+          <h3>Registrar nuevo servicio</h3>
+          <div class="form-row">
+            <div class="form-group"><label>Placa del veh&#237;culo</label><input class="input" id="svcPlaca" placeholder="ej. ABC123"/></div>
+            <div class="form-group"><label>C&#233;dula del cliente</label><input class="input" id="svcCedula" placeholder="ej. 1234567890"/></div>
+            <div class="form-group"><label>Fecha del servicio</label><input class="input" type="date" id="svcFecha"/></div>
+            <div class="form-group"><label>Tipo de servicio</label>
+              <select id="svcTipo"><option value="">Seleccionar...</option><option>Mantenimiento</option><option>Cambio de Aceite</option><option>Frenos</option><option>Revisi&#243;n General</option><option>Otro</option></select>
+            </div>
+            <div class="form-group full"><label>Notas (m&#225;x. 500 caracteres)</label><textarea class="input" id="svcNotas" rows="3" maxlength="500" placeholder="Descripci&#243;n del trabajo realizado..."></textarea></div>
+          </div>
+          <div style="display:flex;gap:.75rem;margin-top:.5rem">
+            <button class="btn btn-primary" onclick="registrarServicio()">Guardar servicio</button>
+            <button class="btn btn-outline" onclick="resetSvcForm()">Limpiar</button>
+          </div>
+        </div>
+        <div class="service-form-card">
+          <h3>Historial por veh&#237;culo</h3>
+          <div style="display:flex;gap:.75rem;align-items:flex-end;flex-wrap:wrap">
+            <div class="form-group" style="flex:1;margin-bottom:0"><label>Buscar por placa</label><input class="input" id="histPlaca" placeholder="ej. ABC123"/></div>
+            <button class="btn btn-primary" onclick="buscarHistorial()">Buscar</button>
+          </div>
+          <div class="table-wrap" style="margin-top:1rem">
+            <table><thead><tr><th>ID Servicio</th><th>Fecha</th><th>Tipo</th><th>Notas</th></tr></thead>
+            <tbody id="bodyHistorial"><tr><td colspan="4" style="text-align:center;color:var(--clr-muted);padding:1.5rem">Ingresa una placa y pulsa Buscar.</td></tr></tbody></table>
+          </div>
+        </div>
+      </div>
+      <!-- AYUDA -->
+      <div class="content-section" id="section-ayuda">
+        <div class="page-header"><h2>Ayuda</h2><p>Instrucciones de uso del sistema Serviteca ADSO.</p></div>
+        <div class="help-module">
+          <h3><span>&#128101;</span> M&#243;dulo Clientes</h3>
+          <ol>
+            <li><strong>Registrar cliente:</strong> Clic en "+ Nuevo cliente", completa C&#233;dula, Nombres, Apellidos, Celular y guarda.</li>
+            <li><strong>Ver veh&#237;culos del cliente:</strong> Clic en &#128663; para ver todos los autos vinculados al propietario.</li>
+            <li><strong>Editar:</strong> Clic en &#9999;&#65039;, modifica y confirma.</li>
+            <li><strong>Eliminar:</strong> Clic en &#128465;&#65039;; se pide confirmaci&#243;n.</li>
+            <li><strong>Suspender:</strong> Bot&#243;n &#9208;&#65039; cambia el estado a Suspendido.</li>
+          </ol>
+        </div>
+        <div class="help-module">
+          <h3><span>&#128663;</span> M&#243;dulo Carros</h3>
+          <ol>
+            <li><strong>Registrar veh&#237;culo:</strong> Ingresa Placa (5&#8211;7 caracteres alfanum&#233;ricos), Marca, Modelo y la C&#233;dula del propietario (cliente registrado).</li>
+            <li><strong>Relaci&#243;n propietario:</strong> Cada carro debe estar vinculado a un cliente. Un cliente puede tener m&#250;ltiples carros.</li>
+            <li><strong>Editar / Eliminar / Suspender:</strong> Usa los botones en cada fila de la tabla.</li>
+          </ol>
+        </div>
+        <div class="help-module">
+          <h3><span>&#128295;</span> M&#243;dulo Servicios</h3>
+          <ol>
+            <li><strong>Registrar servicio:</strong> Completa placa, c&#233;dula, fecha (no futura), tipo y notas. Presiona "Guardar servicio".</li>
+            <li><strong>Consultar historial:</strong> Ingresa la placa y pulsa Buscar; resultados del m&#225;s reciente al m&#225;s antiguo.</li>
+          </ol>
+        </div>
+      </div>
+      <!-- USUARIOS -->
+      <div class="content-section" id="section-usuarios">
+        <div class="page-header"><h2>Gesti&#243;n de Usuarios</h2><p>Solo disponible para administradores.</p></div>
+        <div class="table-toolbar">
+          <div class="search-box"><span class="icon">&#128269;</span><input class="input" id="searchUsuario" placeholder="Buscar por usuario o nombre..." oninput="filterUsuarios()"/></div>
+          <button class="btn btn-primary" onclick="openUsuarioModal()">+ Nuevo usuario</button>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Usuario</th><th>Nombre completo</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="bodyUsuarios"></tbody></table>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+<!-- MODAL cliente -->
+<div class="modal-overlay" id="clienteModal">
+  <div class="modal">
+    <h3 id="clienteModalTitle">Nuevo cliente</h3>
+    <div class="modal-grid">
+      <div class="form-group"><label>C&#233;dula *</label><input class="input" id="cCedula" placeholder="M&#225;x. 10 d&#237;gitos" maxlength="10"/></div>
+      <div class="form-group"><label>Celular *</label><input class="input" id="cCelular" placeholder="M&#225;x. 15 d&#237;gitos" maxlength="15"/></div>
+      <div class="form-group"><label>Nombres *</label><input class="input" id="cNombres" placeholder="Nombres" maxlength="100"/></div>
+      <div class="form-group"><label>Apellidos *</label><input class="input" id="cApellidos" placeholder="Apellidos" maxlength="100"/></div>
+      <div class="form-group full"><label>Correo electr&#243;nico</label><input class="input" id="cCorreo" placeholder="email@ejemplo.com" type="email"/></div>
+    </div>
+    <div style="font-size:.78rem;color:var(--clr-danger);margin-top:.5rem;min-height:1.2rem" id="clienteError"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('clienteModal')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarCliente()">Guardar</button>
+    </div>
+  </div>
+</div>
+<!-- MODAL carro (con propietario) -->
+<div class="modal-overlay" id="carroModal">
+  <div class="modal">
+    <h3 id="carroModalTitle">Nuevo veh&#237;culo</h3>
+    <div class="modal-grid">
+      <div class="form-group"><label>Placa * (5&#8211;7 caracteres)</label><input class="input" id="carPlaca" placeholder="ej. ABC123" maxlength="7"/></div>
+      <div class="form-group"><label>Marca *</label><input class="input" id="carMarca" placeholder="ej. Toyota" maxlength="50"/></div>
+      <div class="form-group full"><label>Modelo *</label><input class="input" id="carModelo" placeholder="ej. Corolla 2020" maxlength="50"/></div>
+      <div class="form-group full">
+        <label>C&#233;dula del propietario * <span style="font-size:.72rem;color:var(--clr-muted)">(un cliente puede tener varios carros)</span></label>
+        <input class="input" id="carCedProp" placeholder="ej. 1000111222" maxlength="10" list="listClientesCedulas" autocomplete="off" oninput="previewPropietario()"/>
+        <datalist id="listClientesCedulas"></datalist>
+        <div id="propietarioPreview" style="font-size:.78rem;color:var(--clr-primary);margin-top:.3rem;min-height:1rem"></div>
+      </div>
+    </div>
+    <div style="font-size:.78rem;color:var(--clr-danger);margin-top:.5rem;min-height:1.2rem" id="carroError"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('carroModal')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarCarro()">Guardar</button>
+    </div>
+  </div>
+</div>
+<!-- MODAL usuario -->
+<div class="modal-overlay" id="usuarioModal">
+  <div class="modal">
+    <h3 id="usuarioModalTitle">Nuevo usuario</h3>
+    <div class="modal-grid">
+      <div class="form-group"><label>Nombre de usuario *</label><input class="input" id="uUsername" placeholder="ej. operador1" maxlength="30" autocomplete="off"/></div>
+      <div class="form-group"><label>Rol *</label><select id="uRol"><option value="usuario">Usuario</option><option value="admin">Administrador</option></select></div>
+      <div class="form-group full"><label>Nombre completo *</label><input class="input" id="uNombre" placeholder="ej. Pedro Ram&#237;rez" maxlength="80"/></div>
+      <div class="form-group full">
+        <label>Contrase&#241;a * <span id="uPassHint" style="font-size:.72rem;color:var(--clr-muted)">(dejar vac&#237;o para no cambiar al editar)</span></label>
+        <div class="password-wrapper">
+          <input class="input" id="uPass" type="password" placeholder="M&#237;nimo 4 caracteres" autocomplete="new-password" oninput="checkStrengthModal()"/>
+          <button class="toggle-pw" type="button" onclick="togglePwModal()">&#128065;&#65039;</button>
+        </div>
+        <div class="strength-bar" id="strengthBarModal"></div>
+        <div class="strength-label" id="strengthLabelModal"></div>
+      </div>
+    </div>
+    <div style="font-size:.78rem;color:var(--clr-danger);margin-top:.5rem;min-height:1.2rem" id="usuarioError"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('usuarioModal')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarUsuario()">Guardar</button>
+    </div>
+  </div>
+</div>
+<script>
+/* DATA STORE */
+let usuarios = load('srv_usuarios',[
+  {username:'admin', nombre:'Administrador', password:'admin', rol:'admin', estado:'Activo'},
+  {username:'taller',nombre:'Operador Taller',password:'1234', rol:'usuario',estado:'Activo'}
+]);
+let currentUser=null;
+function load(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch{return d}}
+function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+let clientes=load('srv_clientes',[
+  {cedula:'1000111222',nombres:'Juan',  apellidos:'Perez', celular:'3001234567',correo:'juan@mail.com',estado:'Activo'},
+  {cedula:'1000333444',nombres:'Maria', apellidos:'Lopez', celular:'3117654321',correo:'',estado:'Activo'},
+  {cedula:'1000555666',nombres:'Carlos',apellidos:'Ruiz',  celular:'3204443322',correo:'carlos@mail.com',estado:'Activo'},
+  {cedula:'1000777888',nombres:'Laura', apellidos:'Gomez', celular:'3009876543',correo:'',estado:'Suspendido'}
+]);
+let carros=load('srv_carros',[
+  {placa:'ABC123',marca:'Toyota',   modelo:'Corolla',cedula_propietario:'1000111222',estado:'Activo'},
+  {placa:'DEF456',marca:'Chevrolet',modelo:'Spark',  cedula_propietario:'1000333444',estado:'Activo'},
+  {placa:'GHI789',marca:'Renault',  modelo:'Sandero',cedula_propietario:'1000555666',estado:'Activo'},
+  {placa:'JKL012',marca:'Mazda',    modelo:'2',      cedula_propietario:'1000333444',estado:'Inactivo'}
+]);
+let servicios=load('srv_servicios',[
+  {id:'svc-001',placa:'ABC123',cedula:'1000111222',fecha:'2026-10-05',tipo:'Cambio de Aceite',notas:'Aceite 5W30 + filtro'},
+  {id:'svc-002',placa:'DEF456',cedula:'1000333444',fecha:'2026-10-04',tipo:'Frenos',notas:'Pastillas delanteras'},
+  {id:'svc-003',placa:'GHI789',cedula:'1000555666',fecha:'2026-10-03',tipo:'Revision General',notas:''},
+  {id:'svc-004',placa:'ABC123',cedula:'1000111222',fecha:'2026-09-20',tipo:'Mantenimiento',notas:'Filtros + revision'},
+  {id:'svc-005',placa:'DEF456',cedula:'1000333444',fecha:'2026-08-15',tipo:'Mantenimiento',notas:''}
+]);
+let editingCedula=null,editingPlaca=null;
+
+/* THEME */
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  localStorage.setItem('srv_theme',t);
+  const lbl=t==='dark'?'&#127769; Oscuro':'&#9728;&#65039; Claro';
+  ['themeToggleLanding','themeToggleLogin','themeToggleApp'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=lbl});
+}
+function toggleTheme(){applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')}
+(function(){applyTheme(localStorage.getItem('srv_theme')||'dark')})();
+
+/* SCREEN NAV */
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id).classList.add('active')}
+
+/* LOGIN */
+let failCount=0;
+function togglePw(){const i=document.getElementById('loginPass');i.type=i.type==='password'?'text':'password'}
+function doLogin(){
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value;
+  const err=document.getElementById('loginError');
+  if(!u||!p){err.textContent='Ambos campos son obligatorios.';err.classList.add('visible');return}
+  const match=usuarios.find(x=>x.username===u&&x.password===p&&x.estado==='Activo');
+  if(match){
+    failCount=0;currentUser=u;err.classList.remove('visible');
+    document.getElementById('topbarUsername').textContent=u;
+    document.getElementById('avatarInitial').textContent=u[0].toUpperCase();
+    document.getElementById('welcomeName').textContent=u;
+    updateKPIs();renderClientes();renderCarros();
+    document.getElementById('navUsuarios').style.display=match.rol==='admin'?'flex':'none';
+    showScreen('app');navTo('dashboard',document.querySelector('.sidebar .nav-item'));
+  } else {
+    failCount++;
+    err.textContent=failCount>=5?'Cuenta bloqueada por 15 minutos.':'Usuario o contrasena incorrectos. Intento '+failCount+'/5.';
+    err.classList.add('visible');
+  }
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('screen-login').classList.contains('active'))doLogin()});
+
+/* SIDEBAR */
+function navTo(section,btn){
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('section-'+section).classList.add('active');
+  if(section==='usuarios')renderUsuarios();
+  if(section!=='clientes'){const p=document.getElementById('clienteCarrosPanel');if(p)p.style.display='none'}
+}
+
+/* KPIs */
+function updateKPIs(){
+  document.getElementById('kpiClientes').textContent=clientes.length;
+  document.getElementById('kpiCarros').textContent=carros.length;
+  document.getElementById('kpiServicios').textContent=servicios.length;
+  document.getElementById('kpiActivos').textContent=clientes.filter(c=>c.estado==='Activo').length;
+}
+
+/* CLIENTES */
+function renderClientes(list){
+  list=list||clientes;
+  const tbody=document.getElementById('bodyClientes');
+  if(!list.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--clr-muted);padding:1.5rem">Sin resultados.</td></tr>';return}
+  tbody.innerHTML=list.map(c=>`<tr>
+    <td>${c.cedula}</td><td>${c.nombres}</td><td>${c.apellidos}</td><td>${c.celular}</td>
+    <td><span class="badge ${c.estado==='Activo'?'badge-active':'badge-suspend'}">${c.estado}</span></td>
+    <td><div class="actions">
+      <button class="btn btn-outline btn-sm" title="Ver vehiculos" onclick="verCarrosCliente('${c.cedula}')">&#128663;</button>
+      <button class="btn btn-outline btn-sm" onclick="editCliente('${c.cedula}')">&#9999;&#65039;</button>
+      <button class="btn btn-warn btn-sm" onclick="suspenderCliente('${c.cedula}')">${c.estado==='Activo'?'&#9208;&#65039;':'&#9654;&#65039;'}</button>
+      <button class="btn btn-danger btn-sm" onclick="askDeleteCliente('${c.cedula}')">&#128465;&#65039;</button>
+    </div></td></tr>`).join('');
+}
+function filterClientes(){const q=document.getElementById('searchCliente').value.toLowerCase();renderClientes(clientes.filter(c=>c.cedula.includes(q)||c.nombres.toLowerCase().includes(q)||c.apellidos.toLowerCase().includes(q)))}
+function verCarrosCliente(cedula){
+  const cl=clientes.find(c=>c.cedula===cedula);
+  const panel=document.getElementById('clienteCarrosPanel');
+  document.getElementById('clienteCarrosPanelNombre').textContent=cl?cl.nombres+' '+cl.apellidos+' (cedula: '+cedula+')':'';
+  const vs=carros.filter(c=>c.cedula_propietario===cedula);
+  document.getElementById('clienteCarrosLista').innerHTML=vs.length?vs.map(v=>`<span class="client-car-chip">&#128663; ${v.placa} &mdash; ${v.marca} ${v.modelo} <span style="font-size:.7rem;opacity:.7">${v.estado}</span></span>`).join(''):'<span style="font-size:.82rem;color:var(--clr-muted)">Este cliente no tiene vehiculos registrados.</span>';
+  panel.style.display='block';panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function openClienteModal(cedula){
+  editingCedula=cedula||null;
+  document.getElementById('clienteModalTitle').textContent=cedula?'Editar cliente':'Nuevo cliente';
+  document.getElementById('clienteError').textContent='';
+  if(cedula){const c=clientes.find(x=>x.cedula===cedula);document.getElementById('cCedula').value=c.cedula;document.getElementById('cNombres').value=c.nombres;document.getElementById('cApellidos').value=c.apellidos;document.getElementById('cCelular').value=c.celular;document.getElementById('cCorreo').value=c.correo}
+  else{['cCedula','cNombres','cApellidos','cCelular','cCorreo'].forEach(id=>document.getElementById(id).value='')}
+  document.getElementById('clienteModal').classList.add('open');
+}
+function guardarCliente(){
+  const cedula=document.getElementById('cCedula').value.trim();
+  const nombres=document.getElementById('cNombres').value.trim();
+  const apellidos=document.getElementById('cApellidos').value.trim();
+  const celular=document.getElementById('cCelular').value.trim();
+  const correo=document.getElementById('cCorreo').value.trim();
+  const errEl=document.getElementById('clienteError');
+  if(!cedula||!nombres||!apellidos||!celular){errEl.textContent='Cedula, Nombres, Apellidos y Celular son obligatorios.';return}
+  if(!/^\d{1,10}$/.test(cedula)){errEl.textContent='La Cedula debe tener entre 1 y 10 digitos numericos.';return}
+  if(!/^\d{1,15}$/.test(celular)){errEl.textContent='El Celular debe tener entre 1 y 15 digitos numericos.';return}
+  if(correo&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)){errEl.textContent='Formato de correo invalido.';return}
+  if(clientes.find(c=>c.cedula===cedula&&c.cedula!==editingCedula)){errEl.textContent='La cedula ya esta registrada en otro cliente.';return}
+  if(editingCedula){const idx=clientes.findIndex(c=>c.cedula===editingCedula);clientes[idx]={...clientes[idx],cedula,nombres,apellidos,celular,correo}}
+  else{clientes.push({cedula,nombres,apellidos,celular,correo,estado:'Activo'})}
+  save('srv_clientes',clientes);updateKPIs();renderClientes();closeModal('clienteModal');
+  toast(editingCedula?'Cliente actualizado':'Cliente registrado','success');
+}
+function editCliente(c){openClienteModal(c)}
+function suspenderCliente(cedula){
+  const idx=clientes.findIndex(c=>c.cedula===cedula);
+  clientes[idx].estado=clientes[idx].estado==='Activo'?'Suspendido':'Activo';
+  save('srv_clientes',clientes);updateKPIs();renderClientes();
+  toast('Cliente '+(clientes[idx].estado==='Activo'?'reactivado':'suspendido'),'success');
+}
+function askDeleteCliente(cedula){
+  showConfirm('Eliminar cliente?','Se eliminara permanentemente el cliente con cedula '+cedula+'.',()=>{
+    clientes=clientes.filter(c=>c.cedula!==cedula);save('srv_clientes',clientes);updateKPIs();renderClientes();toast('Cliente eliminado','success');
+  });
+}
+
+/* CARROS */
+function renderCarros(list){
+  list=list||carros;
+  const tbody=document.getElementById('bodyCarros');
+  if(!list.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--clr-muted);padding:1.5rem">Sin resultados.</td></tr>';return}
+  tbody.innerHTML=list.map(c=>{
+    const prop=clientes.find(cl=>cl.cedula===c.cedula_propietario);
+    const pn=prop?prop.nombres+' '+prop.apellidos:'<span style="color:var(--clr-danger)">Sin propietario</span>';
+    const ps=prop?'<small style="color:var(--clr-muted);display:block">'+c.cedula_propietario+'</small>':'';
+    return `<tr><td><strong>${c.placa}</strong></td><td>${c.marca}</td><td>${c.modelo}</td><td>${pn}${ps}</td>
+    <td><span class="badge ${c.estado==='Activo'?'badge-active':'badge-suspend'}">${c.estado}</span></td>
+    <td><div class="actions">
+      <button class="btn btn-outline btn-sm" onclick="editCarro('${c.placa}')">&#9999;&#65039;</button>
+      <button class="btn btn-warn btn-sm" onclick="suspenderCarro('${c.placa}')">${c.estado==='Activo'?'&#9208;&#65039;':'&#9654;&#65039;'}</button>
+      <button class="btn btn-danger btn-sm" onclick="askDeleteCarro('${c.placa}')">&#128465;&#65039;</button>
+    </div></td></tr>`;
+  }).join('');
+}
+function filterCarros(){
+  const q=document.getElementById('searchCarro').value.toLowerCase();
+  renderCarros(carros.filter(c=>{
+    const prop=clientes.find(cl=>cl.cedula===c.cedula_propietario);
+    const pn=prop?prop.nombres+' '+prop.apellidos:'';
+    return c.placa.toLowerCase().includes(q)||c.marca.toLowerCase().includes(q)||c.modelo.toLowerCase().includes(q)||pn.toLowerCase().includes(q)||(c.cedula_propietario||'').includes(q);
+  }));
+}
+function rebuildCedulaDatalist(){
+  const dl=document.getElementById('listClientesCedulas');
+  dl.innerHTML=clientes.map(c=>`<option value="${c.cedula}">${c.cedula} - ${c.nombres} ${c.apellidos}</option>`).join('');
+}
+function previewPropietario(){
+  const cedula=document.getElementById('carCedProp').value.trim();
+  const prev=document.getElementById('propietarioPreview');
+  const prop=clientes.find(c=>c.cedula===cedula);
+  prev.textContent=prop?'OK '+prop.nombres+' '+prop.apellidos:(cedula?'Cedula no registrada':'');
+}
+function openCarroModal(placa){
+  editingPlaca=placa||null;
+  document.getElementById('carroModalTitle').textContent=placa?'Editar vehiculo':'Nuevo vehiculo';
+  document.getElementById('carroError').textContent='';
+  document.getElementById('propietarioPreview').textContent='';
+  rebuildCedulaDatalist();
+  if(placa){const c=carros.find(x=>x.placa===placa);document.getElementById('carPlaca').value=c.placa;document.getElementById('carMarca').value=c.marca;document.getElementById('carModelo').value=c.modelo;document.getElementById('carCedProp').value=c.cedula_propietario||'';previewPropietario()}
+  else{['carPlaca','carMarca','carModelo','carCedProp'].forEach(id=>document.getElementById(id).value='')}
+  document.getElementById('carroModal').classList.add('open');
+}
+function guardarCarro(){
+  const placa=document.getElementById('carPlaca').value.trim().toUpperCase();
+  const marca=document.getElementById('carMarca').value.trim();
+  const modelo=document.getElementById('carModelo').value.trim();
+  const cedProp=document.getElementById('carCedProp').value.trim();
+  const errEl=document.getElementById('carroError');
+  if(!placa||!marca||!modelo||!cedProp){errEl.textContent='Todos los campos son obligatorios, incluyendo la cedula del propietario.';return}
+  if(!/^[A-Z0-9]{5,7}$/.test(placa)){errEl.textContent='La placa debe tener entre 5 y 7 caracteres alfanumericos.';return}
+  if(!clientes.find(c=>c.cedula===cedProp)){errEl.textContent='La cedula del propietario no corresponde a ningun cliente registrado.';return}
+  if(carros.find(c=>c.placa===placa&&c.placa!==editingPlaca)){errEl.textContent='La placa ya esta registrada en otro vehiculo.';return}
+  if(editingPlaca){const idx=carros.findIndex(c=>c.placa===editingPlaca);carros[idx]={...carros[idx],placa,marca,modelo,cedula_propietario:cedProp}}
+  else{carros.push({placa,marca,modelo,cedula_propietario:cedProp,estado:'Activo'})}
+  save('srv_carros',carros);updateKPIs();renderCarros();closeModal('carroModal');
+  toast(editingPlaca?'Vehiculo actualizado':'Vehiculo registrado','success');
+}
+function editCarro(p){openCarroModal(p)}
+function suspenderCarro(placa){
+  const idx=carros.findIndex(c=>c.placa===placa);
+  carros[idx].estado=carros[idx].estado==='Activo'?'Inactivo':'Activo';
+  save('srv_carros',carros);updateKPIs();renderCarros();
+  toast('Vehiculo '+(carros[idx].estado==='Activo'?'reactivado':'suspendido'),'success');
+}
+function askDeleteCarro(placa){
+  showConfirm('Eliminar vehiculo?','Se eliminara permanentemente el vehiculo con placa '+placa+'.',()=>{
+    carros=carros.filter(c=>c.placa!==placa);save('srv_carros',carros);updateKPIs();renderCarros();toast('Vehiculo eliminado','success');
+  });
+}
+
+/* SERVICIOS */
+document.addEventListener('DOMContentLoaded',()=>{const t=new Date().toISOString().split('T')[0];document.getElementById('svcFecha').value=t;document.getElementById('svcFecha').max=t});
+function registrarServicio(){
+  const placa=document.getElementById('svcPlaca').value.trim().toUpperCase();
+  const cedula=document.getElementById('svcCedula').value.trim();
+  const fecha=document.getElementById('svcFecha').value;
+  const tipo=document.getElementById('svcTipo').value;
+  const notas=document.getElementById('svcNotas').value.trim();
+  if(!placa||!cedula||!fecha||!tipo){toast('Completa todos los campos obligatorios.','error');return}
+  if(fecha>new Date().toISOString().split('T')[0]){toast('La fecha no puede ser futura.','error');return}
+  if(!carros.find(c=>c.placa===placa)){toast('La placa no existe en el sistema.','error');return}
+  if(!clientes.find(c=>c.cedula===cedula)){toast('La cedula no existe en el sistema.','error');return}
+  if(notas.length>500){toast('Las notas no pueden exceder 500 caracteres.','error');return}
+  servicios.unshift({id:'svc-'+Date.now(),placa,cedula,fecha,tipo,notas});
+  save('srv_servicios',servicios);updateKPIs();resetSvcForm();toast('Servicio registrado exitosamente','success');
+}
+function resetSvcForm(){
+  document.getElementById('svcPlaca').value='';document.getElementById('svcCedula').value='';
+  document.getElementById('svcFecha').value=new Date().toISOString().split('T')[0];
+  document.getElementById('svcTipo').value='';document.getElementById('svcNotas').value='';
+}
+function buscarHistorial(){
+  const placa=document.getElementById('histPlaca').value.trim().toUpperCase();
+  const tbody=document.getElementById('bodyHistorial');
+  if(!placa){toast('Ingresa una placa para buscar.','error');return}
+  if(!carros.find(c=>c.placa===placa)){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--clr-danger);padding:1.2rem">La placa <strong>'+placa+'</strong> no existe en el sistema.</td></tr>';return}
+  const lista=servicios.filter(s=>s.placa===placa).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  if(!lista.length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--clr-muted);padding:1.2rem">No se encontraron servicios para este vehiculo.</td></tr>';return}
+  tbody.innerHTML=lista.map(s=>`<tr><td style="font-size:.75rem;color:var(--clr-muted)">${s.id}</td><td>${s.fecha}</td><td><span class="badge badge-active">${s.tipo}</span></td><td>${s.notas||'&mdash;'}</td></tr>`).join('');
+}
+
+/* REGISTRO */
+function togglePwReg(){const i=document.getElementById('regPass');i.type=i.type==='password'?'text':'password'}
+function togglePwReg2(){const i=document.getElementById('regPass2');i.type=i.type==='password'?'text':'password'}
+function checkStrength(iId,bId,lId){
+  iId=iId||'regPass';bId=bId||'strengthBar';lId=lId||'strengthLabel';
+  const val=document.getElementById(iId).value;
+  const bar=document.getElementById(bId);const lbl=document.getElementById(lId);
+  if(!val){bar.className='strength-bar';lbl.textContent='';return}
+  const strong=val.length>=8&&/[A-Z]/.test(val)&&/\d/.test(val);
+  const medium=val.length>=6;
+  if(strong){bar.className='strength-bar strong';lbl.textContent='Contrasena fuerte OK'}
+  else if(medium){bar.className='strength-bar medium';lbl.textContent='Contrasena aceptable'}
+  else{bar.className='strength-bar weak';lbl.textContent='Contrasena debil'}
+}
+function doRegister(){
+  const u=document.getElementById('regUser').value.trim().toLowerCase();
+  const n=document.getElementById('regNombre').value.trim();
+  const p=document.getElementById('regPass').value;
+  const p2=document.getElementById('regPass2').value;
+  const err=document.getElementById('registerError');
+  if(!u||!n||!p||!p2){err.textContent='Todos los campos son obligatorios.';err.classList.add('visible');return}
+  if(!/^[a-z0-9_]{3,30}$/.test(u)){err.textContent='El usuario solo puede contener letras, numeros y _ (3-30 chars).';err.classList.add('visible');return}
+  if(p.length<4){err.textContent='La contrasena debe tener al menos 4 caracteres.';err.classList.add('visible');return}
+  if(p!==p2){err.textContent='Las contrasenas no coinciden.';err.classList.add('visible');return}
+  if(usuarios.find(x=>x.username===u)){err.textContent='Ese nombre de usuario ya esta registrado.';err.classList.add('visible');return}
+  usuarios.push({username:u,nombre:n,password:p,rol:'usuario',estado:'Activo'});
+  save('srv_usuarios',usuarios);err.classList.remove('visible');
+  ['regUser','regNombre','regPass','regPass2'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('strengthBar').className='strength-bar';document.getElementById('strengthLabel').textContent='';
+  showScreen('login');
+  setTimeout(()=>{
+    const le=document.getElementById('loginError');
+    le.style.background='rgba(255,107,0,.12)';le.style.borderColor='rgba(255,107,0,.3)';le.style.color='var(--clr-primary)';
+    le.textContent='Cuenta creada. Ahora puedes iniciar sesion.';le.classList.add('visible');
+    setTimeout(()=>{le.classList.remove('visible');le.style=''},4000);
+  },100);
+}
+
+/* USUARIOS */
+let editingUsername=null;
+function renderUsuarios(list){
+  list=list||usuarios;const tbody=document.getElementById('bodyUsuarios');if(!tbody)return;
+  if(!list.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--clr-muted);padding:1.5rem">Sin resultados.</td></tr>';return}
+  tbody.innerHTML=list.map(u=>`<tr>
+    <td><strong>${u.username}</strong></td><td>${u.nombre}</td>
+    <td><span class="badge ${u.rol==='admin'?'badge-admin':'badge-user'}">${u.rol==='admin'?'Administrador':'Usuario'}</span></td>
+    <td><span class="badge ${u.estado==='Activo'?'badge-active':'badge-suspend'}">${u.estado}</span></td>
+    <td><div class="actions">
+      <button class="btn btn-outline btn-sm" onclick="editUsuario('${u.username}')">&#9999;&#65039;</button>
+      <button class="btn btn-warn btn-sm" onclick="toggleUsuario('${u.username}')">${u.estado==='Activo'?'&#9208;&#65039;':'&#9654;&#65039;'}</button>
+      <button class="btn btn-danger btn-sm" ${u.username===currentUser?'disabled':''}
+        onclick="askDeleteUsuario('${u.username}')">&#128465;&#65039;</button>
+    </div></td></tr>`).join('');
+}
+function filterUsuarios(){const q=document.getElementById('searchUsuario').value.toLowerCase();renderUsuarios(usuarios.filter(u=>u.username.includes(q)||u.nombre.toLowerCase().includes(q)))}
+function openUsuarioModal(username){
+  editingUsername=username||null;
+  document.getElementById('usuarioModalTitle').textContent=username?'Editar usuario':'Nuevo usuario';
+  document.getElementById('usuarioError').textContent='';
+  document.getElementById('strengthBarModal').className='strength-bar';
+  document.getElementById('strengthLabelModal').textContent='';
+  document.getElementById('uPassHint').style.display=username?'inline':'none';
+  if(username){const u=usuarios.find(x=>x.username===username);document.getElementById('uUsername').value=u.username;document.getElementById('uNombre').value=u.nombre;document.getElementById('uRol').value=u.rol;document.getElementById('uPass').value=''}
+  else{['uUsername','uNombre','uPass'].forEach(id=>document.getElementById(id).value='');document.getElementById('uRol').value='usuario'}
+  document.getElementById('usuarioModal').classList.add('open');
+}
+function togglePwModal(){const i=document.getElementById('uPass');i.type=i.type==='password'?'text':'password'}
+function checkStrengthModal(){checkStrength('uPass','strengthBarModal','strengthLabelModal')}
+function guardarUsuario(){
+  const username=document.getElementById('uUsername').value.trim().toLowerCase();
+  const nombre=document.getElementById('uNombre').value.trim();
+  const rol=document.getElementById('uRol').value;
+  const pass=document.getElementById('uPass').value;
+  const errEl=document.getElementById('usuarioError');
+  if(!username||!nombre){errEl.textContent='Usuario y nombre completo son obligatorios.';return}
+  if(!/^[a-z0-9_]{3,30}$/.test(username)){errEl.textContent='El usuario solo puede tener letras, numeros y _ (3-30 chars).';return}
+  if(!editingUsername&&!pass){errEl.textContent='La contrasena es obligatoria para nuevos usuarios.';return}
+  if(pass&&pass.length<4){errEl.textContent='La contrasena debe tener al menos 4 caracteres.';return}
+  if(usuarios.find(u=>u.username===username&&u.username!==editingUsername)){errEl.textContent='Ese nombre de usuario ya esta en uso.';return}
+  if(editingUsername){const idx=usuarios.findIndex(u=>u.username===editingUsername);usuarios[idx]={...usuarios[idx],username,nombre,rol,...(pass?{password:pass}:{})}}
+  else{usuarios.push({username,nombre,password:pass,rol,estado:'Activo'})}
+  save('srv_usuarios',usuarios);renderUsuarios();closeModal('usuarioModal');
+  toast(editingUsername?'Usuario actualizado':'Usuario creado','success');
+}
+function editUsuario(u){openUsuarioModal(u)}
+function toggleUsuario(username){
+  if(username===currentUser){toast('No puedes suspenderte a ti mismo.','error');return}
+  const idx=usuarios.findIndex(u=>u.username===username);
+  usuarios[idx].estado=usuarios[idx].estado==='Activo'?'Suspendido':'Activo';
+  save('srv_usuarios',usuarios);renderUsuarios();
+  toast('Usuario '+(usuarios[idx].estado==='Activo'?'reactivado':'suspendido'),'success');
+}
+function askDeleteUsuario(username){
+  if(username===currentUser){toast('No puedes eliminar tu propia cuenta.','error');return}
+  showConfirm('Eliminar usuario?','Se eliminara permanentemente la cuenta "'+username+'".',()=>{
+    usuarios=usuarios.filter(u=>u.username!==username);save('srv_usuarios',usuarios);renderUsuarios();toast('Usuario eliminado','success');
+  });
+}
+
+/* MODALS */
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+let confirmCallback=null;
+function showConfirm(title,msg,cb){
+  document.getElementById('confirmTitle').textContent=title;
+  document.getElementById('confirmMsg').textContent=msg;
+  confirmCallback=cb;document.getElementById('confirmOverlay').classList.add('open');
+}
+function closeConfirm(){document.getElementById('confirmOverlay').classList.remove('open');confirmCallback=null}
+document.getElementById('confirmOkBtn').addEventListener('click',()=>{if(confirmCallback)confirmCallback();closeConfirm()});
+function confirmLogout(){
+  showConfirm('Cerrar sesion?','Estas seguro de que deseas cerrar la sesion actual?',()=>{
+    currentUser=null;document.getElementById('loginUser').value='';document.getElementById('loginPass').value='';
+    document.getElementById('loginError').classList.remove('visible');showScreen('login');
+  });
+}
+document.querySelectorAll('.modal-overlay').forEach(overlay=>{
+  overlay.addEventListener('click',e=>{if(e.target===overlay&&overlay.id!=='confirmOverlay')closeModal(overlay.id)});
+});
+
+/* TOAST */
+function toast(msg,type){
+  const el=document.createElement('div');el.className='toast toast-'+type;
+  el.textContent=(type==='success'?'OK ':'ERR ')+msg;
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(()=>el.remove(),3200);
+}
+</script>
+</body>
+</html>
